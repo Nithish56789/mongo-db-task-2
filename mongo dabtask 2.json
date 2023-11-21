@@ -1,0 +1,76 @@
+
+db.createCollection("users", {
+    user_id: { type: "string", unique: true },
+    name: { type: "string" },
+    email: { type: "string", unique: true },
+    // ... other user-related fields
+  });
+  
+  // Codekata Collection
+  db.createCollection("codekata", {
+    user_id: { type: "string", unique: true },
+    problems_solved: { type: "number" },
+    // ... other codekata-related fields
+  });
+  
+  // Attendance Collection
+  db.createCollection("attendance", {
+    user_id: { type: "string" },
+    date: { type: "date" },
+    status: { type: "string" }, // "present" or "absent"
+    // ... other attendance-related fields
+  });
+  
+  // Topics Collection
+  db.createCollection("topics", {
+    topic_id: { type: "string", unique: true },
+    name: { type: "string" },
+    // ... other topic-related fields
+  });
+  
+  // Tasks Collection
+  db.createCollection("tasks", {
+    task_id: { type: "string", unique: true },
+    user_id: { type: "string" },
+    topic_id: { type: "string" },
+    submission_date: { type: "date" },
+    // ... other task-related fields
+  });
+  
+  // Company Drives Collection
+  db.createCollection("company_drives", {
+    drive_id: { type: "string", unique: true },
+    drive_date: { type: "date" },
+    // ... other company drive-related fields
+  });
+  
+  // Mentors Collection
+  db.createCollection("mentors", {
+    mentor_id: { type: "string", unique: true },
+    name: { type: "string" },
+    mentee_count: { type: "number" },
+    // ... other mentor-related fields
+  });
+  
+  Find all the topics and tasks taught in the month of October:
+  db.topics.find({}).toArray();
+db.tasks.find({ submission_date: { $gte: ISODate("2023-10-01"), $lt: ISODate("2023-11-01") } }).toArray();
+
+Find all the company drives between 15-Oct-2020 and 31-Oct-2020:
+db.company_drives.find({ drive_date: { $gte: ISODate("2020-10-15"), $lte: ISODate("2020-10-31") } }).toArray();
+
+Find all the company drives and students who appeared for placement:
+db.company_drives.find({}).toArray();
+db.tasks.find({ submission_date: { $exists: true } }).toArray();
+
+find the number of problems solved by a user in codekata:
+db.codekata.aggregate([
+    { $group: { _id: "$user_id", total_problems_solved: { $sum: "$problems_solved" } } }
+  ]).toArray();
+
+  Find all the mentors with more than 15 mentors:
+  db.mentors.find({ mentee_count: { $gt: 15 } }).toArray();
+
+  Find the number of users absent and tasks not submitted between 15-Oct-2020 and 31-Oct-2020:
+  db.attendance.find({ date: { $gte: ISODate("2020-10-15"), $lte: ISODate("2020-10-31") }, status: "absent" }).toArray();
+db.tasks.find({ submission_date: { $exists: false } }).toArray();
